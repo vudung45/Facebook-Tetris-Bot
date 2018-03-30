@@ -143,16 +143,20 @@ class Game(object):
 		self.saved_block = 0 #not yet implemented
 
 
-	def find_best(self, block):
-		best_fit = (0,3,0) # (form_index, x-cord, fitness)
-		#iterate through all the possible forms of the block
+	#return the best possible move, given the type of block
+	def get_move(self, block):
+		best_move = (0,3,0) # (form_index, x-cord, fitness)
+		#iterate through all the possible form of the block
 		#find the best form and position to place it
-		for i, puzzle in enumerate(blocks[block]):
-			best_move = self.best_fit(puzzle) #best move for this form
+		for i, form in enumerate(blocks[block]):
+			opt_move = self.find_opt_move(i,form) #most optimal move for this form
+			#opt_move = (x_cord, fitness)
 			#comparing fitness value
-			if best_move[1] > best_fit[2]:
-				best_fit = (i,best_move[0],best_move[1])
-		self.board = self.place_puzzle(best_fit[1], blocks[block][best_fit[0]])
+			if opt_move[1] > best_move[2]:
+				best_move = (i, opt_move[0], opt_move[1])
+		#place the puzzle
+		self.place_puzzle(self.board, best_fit[1], blocks[block][best_move[0]])
+		return best_move
 
 
 	def collides(self, board, puzzle, x, y):
@@ -164,8 +168,7 @@ class Game(object):
 
 
 	#return a new board
-	def place_puzzle(self, x, puzzle):
-		n_board = np.copy(self.board)
+	def place_puzzle(self, n_board, x, puzzle):
 		y = len(n_board) - 1
 		#looping from bottom to top for efficiency
 		while y > 0 and not collides(n_board,puzzle,x,y):
@@ -174,8 +177,7 @@ class Game(object):
 		#place the puzzle
 		for r in range(0, len(puzzle)):
 			for c in range(0, len(puzzle[0])):
-				board_n[y+r][x+c] = puzzle[r][c]
-		return n_board
+				board_n[y+r][x+c] = puzzle[r][c];
 
 
 	#return points scored
@@ -233,23 +235,25 @@ class Game(object):
 		return holes;
 				
 
-	# fitness = Score = A * Sum of Heights
-    #             +  B * Number of Clears
-    #             +  C * Number of Holes 
-    #             +  D * Number of Blockades 
-	def best_fit(self,puzzle):
+	#find the most optimal move for the given formation of the puzzle
+	def find_opt_move(self, puzzle):
 		best_position = (3,0)
 		#all possible moves given the puzzle
 		for x in range(0, len(self.board[0])):
-			new_board = self.place_puzzle(x,puzzle)
+			new_board = np.copy(self.board)
+			self.place_puzzle(new_board, x, puzzle)
 			m_height = self.max_height(new_board)
-			rows_cleared = rows_cleared(new_board,height = m_height)
+			rows_cleared = rows_cleared(new_board, height = m_height)
 			m_height -= rows_cleared
 			heights = self.all_heights(new_board)
 			cumulative_height = np.sum(heights)
 			relative_height = m_height - np.min(heights)
 			roughness = self.sumPars(heights)
-			holes = selfnum_holes(board,height = m_height);
+			holes = selfnum_holes(board,height = m_height)
+			# fitness = Score = A * Sum of Heights
+    		#             +  B * Number of Clears
+    		#             +  C * Number of Holes 
+    		#             +  D * Number of Blockades 
 			fitness = rows_cleared * 0.22 + m_height * -0.87 
 						+ cumulative_height * -0.73 + relative_height * 0.178 - holes * 0.15 + roughness * -0.02
 			if best_position[1] < fitness:
