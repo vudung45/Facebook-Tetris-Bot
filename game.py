@@ -169,7 +169,7 @@ class Game(object):
 		y = len(n_board) - 1
 		#looping from bottom to top for efficiency
 		while y > 0 and not collides(n_board,puzzle,x,y):
-			y--;
+			y-=1;
 
 		#place the puzzle
 		for r in range(0, len(puzzle)):
@@ -184,11 +184,11 @@ class Game(object):
 		points = 0;
 		rows_to_clear = []
 		r_bound = len(board)
-		if height != None
+		if height != None:
 			r_bound = height + 1;
 		for r in reversed(range(0, r_bound)):
 			for c in range(0, len(board[0])):
-				if(board[r][c] == 0)
+				if(board[r][c] == 0):
 					break;
 				elif c == len(board[0]) - 1:
 					rows_to_clear.push(r);
@@ -228,7 +228,7 @@ class Game(object):
 			r_bound = height + 1;
 		for r in range(0, r_bound - 1):
 			for c in range(0, len(board[0])):
-				if(board[r][c] == 0 && board[r+1][c] == 1)
+				if board[r][c] == 0 and board[r+1][c] == 1:
 					holes+=1;
 		return holes;
 				
@@ -252,7 +252,7 @@ class Game(object):
 			holes = selfnum_holes(board,height = m_height);
 			fitness = rows_cleared * 0.22 + m_height * -0.87 
 						+ cumulative_height * -0.73 + relative_height * 0.178 - holes * 0.15 + roughness * -0.02
-			if best_position[1] < fitness
+			if best_position[1] < fitness:
 				best_position = (x,fitness)
 		return best_position
 
