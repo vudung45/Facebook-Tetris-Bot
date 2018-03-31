@@ -13,6 +13,11 @@ blocks = {
 			 [0,0,1,0],
 			 [0,0,1,0]],
 
+			[[1,1,1,1],
+			 [0,0,0,0],
+			 [0,0,0,0],
+			 [0,0,0,0]],
+
 			[[0,1,0,0],
 			 [0,1,0,0],
 			 [0,1,0,0],
@@ -30,20 +35,30 @@ blocks = {
 	         [0,1,0,0],
 	         [0,0,0,0]],
 
+	        [[1,1,0,0],
+	         [0,1,1,0],
+	         [0,0,0,0],
+	         [0,0,0,0]],
+
 			[[0,1,0,0],
 			 [1,1,0,0],
 			 [1,0,0,0],
 			 [0,0,0,0]]
 	],
-    2 : [ # right z block
-    		[[0,0,1,1],
-	    	 [0,1,1,0],
+    2 : [ # s block
+    		[[0,1,1,0],
+	    	 [1,1,0,0],
 	    	 [0,0,0,0],
 	    	 [0,0,0,0]],
 
 			[[0,1,0,0],
 	    	 [0,1,1,0],
 	    	 [0,0,1,0],
+	    	 [0,0,0,0]],
+
+	    	[[0,0,1,1],
+	    	 [0,1,1,0],
+	    	 [0,0,0,0],
 	    	 [0,0,0,0]],
 
 
@@ -93,8 +108,8 @@ blocks = {
     		 [0,1,0,0],
     		 [0,0,0,0]],
 
-    		[[0,1,1,1],
-    		 [0,0,0,1],
+    		[[1,1,1,0],
+    		 [0,0,1,0],
     		 [0,0,0,0],
     		 [0,0,0,0]],
 
@@ -125,15 +140,16 @@ blocks = {
     		 [0,1,0,0],
     		 [0,0,0,0]]
     ]
-}
+ }
 
 
 # image capture from Tetris facebook app
 # then generate a virtual board 
 class Game(object):
-	def __init__(self, width, height):
+	def __init__(self, width, height, weights):
 		self.board = np.zeros(shape=(height,width + 2), dtype='uint32')
-		
+
+		self.weights = weights
 		for i in range(0,height):
 			self.board[i][0] = 1
 			self.board[i][width+1] = 1
@@ -163,6 +179,7 @@ class Game(object):
 		for r in range(0, len(puzzle)):
 			for c in range(0, len(puzzle[0])):
 				val = 0
+				#if out of bound then just give it a virtual "" 
 				if y + r >= len(board) or x + c >= len(board[0]):
 					val = 1
 				else:
@@ -233,6 +250,14 @@ class Game(object):
 		for i in range(0, len(arr) - 1):
 			sum += abs(arr[i] - arr[i+1])
 		return sum
+
+	def roughness_2(self,arr):
+		sum = 0
+		arr = sorted(arr)
+		n = len(arr)
+		for i in range(n - 1, -1, -1):
+			sum += i*arr[i] - (n-1-i) * arr[i]
+		return sum
  	
  	#number of holes in the board
 	def num_holes(self, board, height = None, heights = None):
@@ -270,8 +295,9 @@ class Game(object):
 	    		#             +  B * Number of Clears
 	    		#             +  C * Number of Holes 
 	    		#             +  D * Number of Blockades 
-				fitness = rows_cleared * 0.22568649650722883 + weighted_height * -0.08679520494876472  \
-				+ cumulative_height * -0.6152727732730796  + relative_height * 0.15842464424735841  + holes * -0.15452215909537684  + roughness * -0.021586109522043928
+				fitness = rows_cleared * self.weights[0]+ weighted_height * self.weights[1] \
+						+ cumulative_height * self.weights[2]  + relative_height * self.weights[3] \
+						+ holes * self.weights[4]  + roughness * self.weights[5]
 				if best_position[1] < fitness:
 					best_position = (x,fitness)
 					best_board = new_board
