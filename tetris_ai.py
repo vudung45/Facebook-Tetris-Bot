@@ -4,9 +4,13 @@ import mss.tools
 from PIL import ImageGrab
 import numpy as np
 from game import Game
+import keyboard
 import time
 import pyautogui as pyg
-monitor = {'top': 380, 'left': 180, 'width': 180, 'height': 360}
+
+
+pyg.PAUSE = 0.06
+monitor = {'top': 315, 'left': 310, 'width': 180, 'height': 360}
 sct = mss.mss()
 ss = cv2.resize(np.array(sct.grab(monitor)),(monitor['width'],monitor['height']));
 
@@ -58,34 +62,56 @@ def move_piece(move):
 	while move[0] > 0:
 		pyg.keyDown("up")
 		pyg.keyUp("up")
-		time.sleep(0.01)
 		move[0]-= 1
 
 	if(move[1] > 4):
 		while move[1] > 4:
 	 		pyg.keyDown("right")
 	 		pyg.keyUp("right")
-	 		time.sleep(0.01)
 	 		move[1]-=1
-	else:
+	elif (move[1] < 4):
 		while move[1] < 4:
 			pyg.keyDown("left")
 			pyg.keyUp("left")
-			time.sleep(0.01)
 			move[1]+=1
 	pyg.keyDown("space")
 	pyg.keyUp("space")
 
-game_started = False
+# def move_piece(move):
+# 	move = list(move)
+# 	while move[0] > 0:
+# 		keyboard.press("up arrow");
+# 		keyboard.release("up arrow");
+# 		time.sleep(0.05)
+# 		move[0]-= 1
 
+# 	if(move[1] > 4):
+# 		while move[1] > 4:
+# 	 		keyboard.press("right arrow");
+# 	 		keyboard.release("right arrow");
+# 	 		time.sleep(0.05)
+# 	 		move[1]-=1
+# 	elif (move[1] < 4):
+# 		while move[1] < 4:
+# 			keyboard.press("left arrow");
+# 			keyboard.release("left arrow");
+# 			time.sleep(0.05)
+# 			move[1]+=1
+# 	keyboard.press("spacebar");
+# 	keyboard.release("spacebar");
+# 	time.sleep(0.05)
+
+game_started = False
 weights = [0.22568649650722883, -0.08679520494876472, \
-			-0.6152727732730796, 0.15842464424735841, \
+			-0.1152727732730796, 0.15842464424735841, \
 			-0.75452215909537684, -0.021586109522043928]
 
+# weights = [0.52568649650722883, -0.08679520494876472, \
+# 			-0.315272773273079, 0.15842464424735841, \
+# 			-0.75452215909537684, -0.021586109522043928]
 
-
-session = Game(10,30, weights)
-time.sleep(7)
+session = Game(10,40, weights)
+time.sleep(3.5)
 #time.sleep(4.5)
 next_piece = 7
 while(True):

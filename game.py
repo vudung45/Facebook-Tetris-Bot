@@ -225,6 +225,8 @@ class Game(object):
 			stack[i][0] = 1
 			stack[i][len(stack[0]) - 1] = 1
 		new_board = np.vstack([stack,np.delete(board,rows_to_clear, axis = 0)])
+		# if len(rows_to_clear) == 1:
+		# 	return -4, new_board	
 		return len(rows_to_clear), new_board
 
 	def max_height(self, board):
