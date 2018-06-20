@@ -10,7 +10,7 @@ import pyautogui as pyg
 
 
 pyg.PAUSE = 0.06
-monitor = {'top': 315, 'left': 310, 'width': 180, 'height': 360}
+monitor = {'top': 315, 'left': 388, 'width': 180, 'height': 360}
 sct = mss.mss()
 ss = cv2.resize(np.array(sct.grab(monitor)),(monitor['width'],monitor['height']));
 
@@ -111,7 +111,7 @@ weights = [0.22568649650722883, -0.08679520494876472, \
 # 			-0.75452215909537684, -0.021586109522043928]
 
 session = Game(10,40, weights)
-time.sleep(3.5)
+time.sleep(4)
 #time.sleep(4.5)
 next_piece = 7
 while(True):

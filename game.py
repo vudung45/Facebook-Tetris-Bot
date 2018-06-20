@@ -274,8 +274,7 @@ class Game(object):
 				if board[r][c] == 0 and len(board) - r < heights[c - 1]:
 					holes+=1;
 		return holes;
-
-				
+	
 
 	#find the most optimal move for the given formation of the puzzle
 	def find_opt_move(self, puzzle):
